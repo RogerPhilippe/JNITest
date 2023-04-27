@@ -1,0 +1,33 @@
+## Passos para gerar biblioteca em C++, e utilizar no C ou Java (com JNI)
+
+g++ -shared -fPIC -o libminha_biblioteca.so implementação.cpp
+
+## Para o programa em C
+gcc -o meu_programa meu_programa.c -L. -lminha_biblioteca
+## OU indicando o caminho da lib
+gcc -o meu_programa meu_programa.c -L/home/seu_usuario/minhas_bibliotecas -Wl,-rpath=/home/seu_usuario/minhas_bibliotecas -lminha_biblioteca
+## ou
+gcc -o meu_programa meu_programa.c -L. -Wl,-rpath=. -lminha_biblioteca
+## Porém assim, o SO vai procurar a biblikoteca sempre nesse caminho indicado, se for executar em outro computador, a biblioteca vai precisar ser instalada lá. No caso de não compilar com a opção -rpath, teoricamente o SO vai procurar nas pastas padrão de bibliotecas.
+
+## Para Java
+javac TesteJNI.java
+java -Djava.library.path=. TesteJN
+
+## Outra maneira
+javac -h . HelloJNI.java
+## ou
+javac HelloJNI.java
+javah HelloJNI
+
+é necessário criar o arquivo em c de acordo com o cabeçalho gerado
+
+#Compilar o arquivo em c
+gcc -fPIC -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" -shared -o libhello.so HelloJNI.c
+E executar: java -Djava.library.path=. HelloJNI
+
+## Utilizando lib c++ no código c gerado a partir do javah ou javac -h
+g++ -fPIC -I"$JAVA_HOME/include" -I"$JAVA_HOME/include/linux" -shared -o libhello.so HelloJNI.c minha_bilbioteca.cpp
+
+
+## Ver: https://www3.ntu.edu.sg/home/ehchua/programming/java/javanativeinterface.html
